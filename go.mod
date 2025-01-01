@@ -1,3 +1,3 @@
-module linear_algebra
+module linearalgebra
 
 go 1.23.2

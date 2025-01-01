@@ -1,4 +1,4 @@
-package linear_algebra
+package linearalgebra
 
 type System struct {
 	e []Equation
