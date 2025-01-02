@@ -62,7 +62,7 @@ func (s System) Solve() (Vector, error) {
 	if err != nil {
 		return Vector{}, err
 	}
-	d, err := i.Multiply(s.Res().ToMatrix().Transpose())
+	d, err := i.Multiply(s.Res().ToMatrix())
 	if err != nil {
 		return Vector{}, err
 	}

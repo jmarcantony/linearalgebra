@@ -31,7 +31,11 @@ func (v Vector) Get(n int) (float64, error) {
 }
 
 func (v Vector) ToMatrix() Matrix {
-	return Matrix{in: [][]float64{v.in}}
+	var buf [][]float64
+	for i := 0; i < v.Dim(); i++ {
+		buf = append(buf, []float64{v.in[i]})
+	}
+	return MatrixFrom(buf)
 }
 
 func (v Vector) Mag() float64 {
