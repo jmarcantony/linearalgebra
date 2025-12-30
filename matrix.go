@@ -34,6 +34,14 @@ func (a Matrix) Inverse() (Matrix, error) {
 	return b.ScalarMultiply(1 / d), nil
 }
 
+func (a Matrix) Set(i int, j int, val float64) error {
+	if i < 0 || i >= a.M() || j < 0 || j >= a.N() {
+		return OutOfBoundsError
+	}
+	a.in[i][j] = val
+	return nil
+}
+
 func (a Matrix) ScalarMultiply(c float64) Matrix {
 	var buf [][]float64
 	for _, r := range a.in {

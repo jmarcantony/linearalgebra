@@ -23,6 +23,14 @@ func VectorFrom(b []float64) Vector {
 	return Vector{b}
 }
 
+func (v Vector) Set(n int, val float64) error {
+	if n < 0 || n >= v.Dim() {
+		return OutOfBoundsError
+	}
+	v.in[n] = val
+	return nil
+}
+
 func (v Vector) Get(n int) (float64, error) {
 	if n < 0 || n >= len(v.in) {
 		return 0, OutOfBoundsError
