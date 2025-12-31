@@ -19,6 +19,78 @@ type Matrix struct {
 	in [][]float64
 }
 
+func (mat Matrix) ToReducedRowEchcelon() error {
+	for i := 0; i < mat.M(); i++ {
+		curr, _ := mat.GetNthRow(i)
+		for j := 0; j < i; j++ {
+			v, _ := mat.GetNthRow(j)
+			val, _ := curr.Get(j)
+			v = v.Scale(-1 * val)
+			summ, _ := curr.Add(v)
+			curr = summ
+		}
+		piv, _ := curr.Get(i)
+		k := i + 1
+		for piv == 0 {
+			if k >= mat.M() {
+				break
+			}
+			toAdd, _ := mat.GetNthRow(k)
+			summ, _ := curr.Add(toAdd)
+			curr = summ
+			piv, _ = curr.Get(i)
+			k++
+		}
+		now, _ := curr.Get(i)
+		if now == 0 {
+			mat.SetRow(i, curr)
+			return SingularError
+		}
+		now, _ = curr.Get(i)
+		curr = curr.Scale(1 / now)
+		mat.SetRow(i, curr)
+	}
+	return nil
+}
+
+func (a Matrix) Copy() Matrix {
+	var in [][]float64
+	for _, r := range a.in {
+		var row []float64
+		for _, c := range r {
+			row = append(row, c)
+		}
+		in = append(in, row)
+	}
+	return MatrixFrom(in)
+}
+
+func (a Matrix) BackSub() (Vector, error) {
+	mat := a.Copy()
+	if err := mat.ToReducedRowEchcelon(); err != nil {
+		return Vector{}, err
+	}
+	var sol []float64
+	for i := mat.M() - 1; i >= 0; i-- {
+		found := mat.M() - 1 - i
+		curr, _ := mat.GetNthRow(i)
+		rhs, _ := curr.Get(mat.N() - 1)
+		var lhs float64 = 0
+		z := 0
+		for j := mat.N() - 2; j > mat.N()-2-found; j-- {
+			val, _ := curr.Get(j)
+			lhs += sol[z] * val
+			z++
+		}
+		sol = append(sol, rhs-lhs)
+	}
+	var rev []float64
+	for i := len(sol) - 1; i >= 0; i-- {
+		rev = append(rev, sol[i])
+	}
+	return VectorFrom(rev), nil
+}
+
 func (a Matrix) SetRow(n int, row Vector) error {
 	if row.Dim() != a.N() {
 		return VectorUnlikeDimensionsError
