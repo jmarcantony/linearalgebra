@@ -14,9 +14,34 @@ var (
 	SingularError               = errors.New("Matrix is singular")
 )
 
+// Matrix with M rows and N columns
 type Matrix struct {
-	// m x n matrix (m rows, n, col)
 	in [][]float64
+}
+
+func (a Matrix) SetRow(n int, row Vector) error {
+	if row.Dim() != a.N() {
+		return VectorUnlikeDimensionsError
+	}
+	if n < 0 || n >= a.M() {
+		return OutOfBoundsError
+	}
+	a.in[n] = row.ToSlice()
+	return nil
+}
+
+func (a Matrix) SetCol(n int, col Vector) error {
+	if col.Dim() != a.M() {
+		return VectorUnlikeDimensionsError
+	}
+	if n < 0 || n >= a.N() {
+		return OutOfBoundsError
+	}
+	for i := 0; i < a.M(); i++ {
+		v, _ := col.Get(i)
+		a.in[i][n] = v
+	}
+	return nil
 }
 
 func (a Matrix) Inverse() (Matrix, error) {
@@ -247,10 +272,12 @@ func (a Matrix) IsSquare() bool {
 	return a.M() == a.N()
 }
 
+// Get number or rows of matrix
 func (m Matrix) M() int {
 	return len(m.in)
 }
 
+// Get number of columns of matrix
 func (m Matrix) N() int {
 	if len(m.in) == 0 {
 		return 0

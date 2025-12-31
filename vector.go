@@ -19,6 +19,37 @@ func (v Vector) Dim() int {
 	return len(v.in)
 }
 
+func (v Vector) ToSlice() []float64 {
+	var cont []float64
+	for _, v := range v.in {
+		cont = append(cont, v)
+	}
+	return cont
+}
+
+func (v Vector) Copy() Vector {
+	return VectorFrom(v.ToSlice())
+}
+
+func (v Vector) Add(w Vector) (Vector, error) {
+	if v.Dim() != w.Dim() {
+		return Vector{}, VectorUnlikeDimensionsError
+	}
+	m := v.Copy()
+	for i, _ := range m.in {
+		m.in[i] += w.in[i]
+	}
+	return m, nil
+}
+
+func (v Vector) Scale(s float64) Vector {
+	w := v.Copy()
+	for i, _ := range w.in {
+		w.in[i] *= s
+	}
+	return w
+}
+
 func VectorFrom(b []float64) Vector {
 	return Vector{b}
 }
