@@ -19,6 +19,25 @@ type Matrix struct {
 	in [][]float64
 }
 
+func (mat *Matrix) AppendColumn(v Vector) error {
+	if mat.M() != v.Dim() {
+		return VectorUnlikeDimensionsError
+	}
+	for i, _ := range mat.in {
+		val, _ := v.Get(i)
+		mat.in[i] = append(mat.in[i], val)
+	}
+	return nil
+}
+
+func (mat *Matrix) AppendRow(v Vector) error {
+	if mat.N() != v.Dim() {
+		return VectorUnlikeDimensionsError
+	}
+	mat.in = append(mat.in, v.ToSlice())
+	return nil
+}
+
 func (mat Matrix) ToReducedRowEchcelon() error {
 	for i := 0; i < mat.M(); i++ {
 		curr, _ := mat.GetNthRow(i)
